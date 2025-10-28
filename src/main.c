@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <uxhw.h>
 #include "header.h"
 
@@ -49,7 +50,7 @@ main(int argc, char *  argv[])
 		.initTime = kSirModelInitialTime,
 		.finalTime = kSirModelFinalTime,
 		.integratorTimeStep = kSirModelTimestepSize,
-		.numberOfSteps = (kSirModelFinalTime - kSirModelInitialTime)/kSirModelTimestepSize + 1;
+		.numberOfSteps = (kSirModelFinalTime - kSirModelInitialTime)/kSirModelTimestepSize + 1
 	};
 
 	/*
@@ -80,11 +81,12 @@ main(int argc, char *  argv[])
 	}
 	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps; simIteration++)
 	{
-		fprintf(outputFile, "%zu, %lf, %lf\n", simIteration, timeInstantArray[simIteration], sirModelEvolution[simIteration]);
+		fprintf(outputFile, "%lf, %lf, %lf, %lf\n", timeInstantArray[simIteration], sirModelEvolution[simIteration].susceptible, sirModelEvolution[simIteration].infected, sirModelEvolution[simIteration].recovered);
 	}
 	fclose(outputFile);
 
 	free(sirModelEvolution);
 	free(timeInstantArray);
+
 	return EXIT_SUCCESS;
 }
