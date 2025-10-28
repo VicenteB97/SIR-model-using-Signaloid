@@ -74,10 +74,10 @@ main(int argc, char *  argv[])
 	 *	Store the full simulation to a file in the cloud storage:
 	 */
 	FILE *	outputFile = fopen("sd0/Signaloid/sirExampleOutput/sirModelOutput.txt", "w");
-	if(!outputFile)
+	if(outputFile==NULL)
 	{
 		fprintf(stderr, "Error has occured. File cannot be opened.\n");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps; simIteration++)
 	{
