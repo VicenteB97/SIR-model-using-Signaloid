@@ -73,7 +73,7 @@ main(int argc, char *  argv[])
 	/*
 	 *	Store the full simulation to a file in the cloud storage:
 	 */
-	FILE *	outputFile = fopen("sirModelOutput.txt", "w");
+	FILE *	outputFile = fopen("./Signaloid/sirExampleOutput/sirModelOutput.txt", "w");
 	if(!outputFile)
 	{
 		fprintf(stderr, "Error has occured. File cannot be opened.\n");
