@@ -55,7 +55,7 @@ main(int argc, char *  argv[])
 		.initTime = kSirModelInitialTime,
 		.finalTime = kSirModelFinalTime,
 		.integratorTimeStep = kSirModelTimestepSize,
-		.numberOfSteps = (kSirModelFinalTime - kSirModelInitialTime)/kSirModelTimestepSize + 1
+		.numberOfSteps = (size_t)((kSirModelFinalTime - kSirModelInitialTime)/kSirModelTimestepSize + 0.5) + 1
 	};
 
 	/*
