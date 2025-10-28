@@ -8,6 +8,8 @@ typedef struct
 {
 	double	susceptibleToInfectedRate;
 	double	infectedToRecoveredRate;
+    double  birthRate;
+    double  deathRate;
 } vectorFieldParameters;
 
 typedef struct

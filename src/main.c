@@ -14,14 +14,17 @@ odeIntegrationStep(sirModelState *  currentState, simulationParameters *  simPar
 	double	S0 = currentState->susceptible;
 	double	I0 = currentState->infected;
 	double	R0 = currentState->recovered;
+
 	double	susceptibleToInfectedRate = currentState->interactionParameters.susceptibleToInfectedRate;
 	double	infectedToRecoveredRate = currentState->interactionParameters.infectedToRecoveredRate;
+	double	deathRate = currentState->interactionParameters.deathRate;
+	double	birthRate = currentState->interactionParameters.birthRate;
 
 	double	deltaT = simParameters->integratorTimeStep;
 
-	outputState.susceptible = S0 + deltaT * (-susceptibleToInfectedRate * S0 * I0);
-	outputState.infected = I0 + deltaT * (susceptibleToInfectedRate * S0 * I0 - infectedToRecoveredRate * I0);
-	outputState.recovered = R0 + deltaT * (infectedToRecoveredRate * I0);
+	outputState.susceptible = S0 + deltaT * (birthRate - deathRate*S0 - susceptibleToInfectedRate*S0*I0);
+	outputState.infected = I0 + deltaT * (susceptibleToInfectedRate*S0*I0 - (infectedToRecoveredRate + deathRate)*I0);
+	outputState.recovered = R0 + deltaT * (infectedToRecoveredRate*I0 - deathRate*R0);
 
 	return outputState;
 };
@@ -34,7 +37,9 @@ main(int argc, char *  argv[])
 	 */
 	vectorFieldParameters	sirModelInteractionParameters = {
 		.susceptibleToInfectedRate = UxHwDoubleGaussDist(0.3, 0.01),
-		.infectedToRecoveredRate = UxHwDoubleGaussDist(0.2, 0.01)
+		.infectedToRecoveredRate = UxHwDoubleGaussDist(0.2, 0.01),
+		.birthRate = 0.025,
+		.deathRate = 0.025
 	};
 
 	/*
