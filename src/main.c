@@ -1,30 +1,6 @@
 #include <stdio.h>
 #include <uxhw.h>
-
-#define kSirModelInitialTime	(0.0)
-#define kSirModelFinalTime	(30.0)
-#define kSirModelTimestepSize	(0.5)
-
-typedef struct
-{
-	double	susceptibleToInfectedRate;
-	double	infectedToRecoveredRate;
-} vectorFieldParameters;
-
-typedef struct
-{
-	double			susceptible;
-	double			infected;
-	double			recovered;
-	vectorFieldParameters	interactionParameters;
-} sirModelState;
-
-typedef struct
-{
-	double	initTime;
-	double	finalTime;
-	double	integratorTimeStep;
-} simulationParameters;
+#include "header.h"
 
 /*
  *	This is a generic ode integrator function pointer, we can choose the specific integrator inside or just implement one
@@ -58,7 +34,7 @@ main(int argc, char *  argv[])
 	vectorFieldParameters	sirModelInteractionParameters = {
 		.susceptibleToInfectedRate = UxHwDoubleUniformDist(0.25, 0.35),
 		.infectedToRecoveredRate = UxHwDoubleUniformDist(0.15, 0.25)
-	}
+	};
 
 	/*
 	 *	Setup initial state and parameters
@@ -68,12 +44,12 @@ main(int argc, char *  argv[])
 		.infected = UxHwDoubleGaussDist(0.15, 0.01),
 		.recovered = UxHwDoubleGaussDist(0.1, 0.01),
 		.interactionParameters = sirModelInteractionParameters
-	}
+	};
 	simulationParameters	simTimeParams = {
 		.initTime = kSirModelInitialTime,
 		.finalTime = kSirModelFinalTime,
 		.integratorTimeStep = kSirModelTimestepSize
-	}
+	};
 
 	/*
 	 *	Define an array of states to store all the information. Same for the timing info
