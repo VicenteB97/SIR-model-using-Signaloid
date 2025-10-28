@@ -37,7 +37,7 @@ main(int argc, char *  argv[])
 	 */
 	vectorFieldParameters	sirModelInteractionParameters = {
 		.susceptibleToInfectedRate = UxHwDoubleGaussDist(0.3, 0.01),
-		.infectedToRecoveredRate = UxHwDoubleGammaDist(400, 0.0005),
+		.infectedToRecoveredRate = UxHwDoubleUniformDist(0.15, 0.25),
 		.birthRate = 0.025,
 		.deathRate = 0.025
 	};
