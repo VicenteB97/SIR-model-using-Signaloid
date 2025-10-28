@@ -48,24 +48,25 @@ main(int argc, char *  argv[])
 	simulationParameters	simTimeParams = {
 		.initTime = kSirModelInitialTime,
 		.finalTime = kSirModelFinalTime,
-		.integratorTimeStep = kSirModelTimestepSize
+		.integratorTimeStep = kSirModelTimestepSize,
+		.numberOfSteps = (kSirModelFinalTime - kSirModelInitialTime)/kSirModelTimestepSize + 1;
 	};
 
 	/*
 	 *	Define an array of states to store all the information. Same for the timing info
 	 */
-	sirModelState	sirModelEvolution[(size_t)(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
-	double		timeInstantArray[(size_t)(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	sirModelState *	sirModelEvolution = (sirModelState *) malloc(sizeof(sirModelState) * simTimeParams.numberOfSteps);
+	double *	timeInstantArray = (double *) malloc(sizeof(double) * simTimeParams.numberOfSteps);
 
 	sirModelEvolution[0] = sirState;
 	timeInstantArray[0] = simTimeParams.initTime;
-	for(size_t simIteration = 0; simIteration < (kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize; simIteration++)
+	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps; simIteration++)
 	{
 		sirModelEvolution[simIteration + 1] = odeIntegrationStep(&sirModelEvolution[simIteration], &simTimeParams);
 		timeInstantArray[simIteration + 1] = timeInstantArray[simIteration] + simTimeParams.integratorTimeStep;
 	}
 
-	sirModelState	finalState = sirModelEvolution[(size_t)(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	sirModelState	finalState = sirModelEvolution[simTimeParams.numberOfSteps];
 	fprintf(stdout, "Final susceptibles: %lf\nFinal infected: %lf\nFinal recovered: %lf\n", finalState.susceptible, finalState.infected, finalState.recovered);
 
 	/*
@@ -77,11 +78,13 @@ main(int argc, char *  argv[])
 		fprintf(stderr, "Error has occured. File cannot be opened.\n");
 		return EXIT_FAILURE;
 	}
-	for(size_t simIteration = 0; simIteration < (kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1; simIteration++)
+	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps; simIteration++)
 	{
 		fprintf(outputFile, "%zu, %lf, %lf\n", simIteration, timeInstantArray[simIteration], sirModelEvolution[simIteration]);
 	}
 	fclose(outputFile);
 
+	free(sirModelEvolution);
+	free(timeInstantArray);
 	return EXIT_SUCCESS;
 }

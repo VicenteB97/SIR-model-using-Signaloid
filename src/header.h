@@ -23,6 +23,7 @@ typedef struct
 	double	initTime;
 	double	finalTime;
 	double	integratorTimeStep;
+    size_t  numberOfSteps;
 } simulationParameters;
 
 #ifndef EXIT_SUCCESS
