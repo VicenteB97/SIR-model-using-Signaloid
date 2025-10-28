@@ -1,24 +1,111 @@
 #include <stdio.h>
 #include <uxhw.h>
 
+#define kSirModelInitialTime	(0.0)
+#define kSirModelFinalTime	(30.0)
+#define kSirModelTimestepSize	(0.5)
+
+typedef struct
+{
+	double	susceptibleToInfectedRate;
+	double	infectedToRecoveredRate;
+} vectorFieldParameters;
+
+typedef struct
+{
+	double			susceptible;
+	double			infected;
+	double			recovered;
+	vectorFieldParameters	interactionParameters;
+} sirModelState;
+
+typedef struct
+{
+	double	initTime;
+	double	finalTime;
+	double	integratorTimeStep;
+} simulationParameters;
+
+/*
+ *	This is a generic ode integrator function pointer, we can choose the specific integrator inside or just implement one
+ */
+sirModelState
+odeIntegrationStep(sirModelState *  currentState, simulationParameters *  simParameters)
+{
+	sirModelState	outputState = {0};
+
+	double	S0 = currentState->susceptible;
+	double	I0 = currentState->infected;
+	double	R0 = currentState->recovered;
+	double	susceptibleToInfectedRate = currentState->interactionParameters.susceptibleToInfectedRate;
+	double	infectedToRecoveredRate = currentState->interactionParameters.infectedToRecoveredRate;
+
+	double	deltaT = simParameters->integratorTimeStep;
+
+	outputState.susceptible = S0 + deltaT * (-susceptibleToInfectedRate * S0 * I0);
+	outputState.infected = I0 + deltaT * (susceptibleToInfectedRate * S0 * I0 - infectedToRecoveredRate * I0);
+	outputState.recovered = R0 + deltaT * (infectedToRecoveredRate * I0);
+
+	return outputState;
+};
+
 int
 main(int argc, char *  argv[])
 {
-	double	a, b, c;
+	/*
+	 *	Setup the interaction parameters
+	 */
+	vectorFieldParameters	sirModelInteractionParameters = {
+		.susceptibleToInfectedRate = UxHwDoubleUniformDist(0.25, 0.35),
+		.infectedToRecoveredRate = UxHwDoubleUniformDist(0.15, 0.25)
+	}
 
-	a = UxHwDoubleUniformDist(0.5, 1.0);
-	printf("a = %lf\n", a);
+	/*
+	 *	Setup initial state and parameters
+	 */
+	sirModelState	sirState = {
+		.susceptible = UxHwDoubleGaussDist(0.75, 0.01),
+		.infected = UxHwDoubleGaussDist(0.15, 0.01),
+		.recovered = UxHwDoubleGaussDist(0.1, 0.01),
+		.interactionParameters = sirModelInteractionParameters
+	}
+	simulationParameters	simTimeParams = {
+		.initTime = kSirModelInitialTime,
+		.finalTime = kSirModelFinalTime,
+		.integratorTimeStep = kSirModelTimestepSize
+	}
 
-	b = UxHwDoubleUniformDist(10.0, 20.0);
-	printf("b = %lf\n", b);
+	/*
+	 *	Define an array of states to store all the information. Same for the timing info
+	 */
+	sirModelState	sirModelEvolution[(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	double		timeInstantArray[(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
 
-	c = (a+b)/(a-b);
-	printf("c = %lf\n", c);
+	sirModelEvolution[0] = sirState;
+	timeInstantArray[0] = simulationParameters.initTime;
+	for(size_t simIteration = 0; simIteration < (kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize; simIteration++)
+	{
+		sirModelEvolution[simIteration + 1] = odeIntegrationStep(&sirModelEvolution[simIteration], &simTimeParams);
+		timeInstantArray[simIteration + 1] = timeInstantArray[simIteration] + simTimeParams.integratorTimeStep;
+	}
 
-#ifdef DEBUG
-	printf("debug message\n");
-#endif
+	sirModelState	finalState = sirModelEvolution[(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	fprintf(stdout, "Final susceptibles: %lf\nFinal infected: %lf\nFinal recovered: %lf\n", finalState.susceptible, finalState.infected, finalState.recovered);
 
-	return 0;
+	/*
+	 *	Store the full simulation to a file in the cloud storage:
+	 */
+	FILE *	outputFile = fopen("sirModelOutput.txt", "w");
+	if(!outputFile)
+	{
+		fprintf(stderr, "Error has occured. File cannot be opened.\n");
+		return EXIT_FAILURE;
+	}
+	for(size_t simIteration = 0; simIteration < (kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1; simIteration++)
+	{
+		fprintf(outputFile, "%zu, %lf, %lf\n", simIteration, timeInstantArray[simIteration], sirModelEvolution[simIteration]);
+	}
+	fclose(outputFile);
+
+	return EXIT_SUCCESS;
 }
-
