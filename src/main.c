@@ -9,7 +9,7 @@
 sirModelState
 odeIntegrationStep(sirModelState *  currentState, simulationParameters *  simParameters)
 {
-	sirModelState	outputState = {0};
+	sirModelState	outputState = *currentState;
 
 	double	S0 = currentState->susceptible;
 	double	I0 = currentState->infected;
