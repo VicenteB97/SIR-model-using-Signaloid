@@ -46,7 +46,7 @@ main(int argc, char *  argv[])
 	 *	Setup initial state and parameters
 	 */
 	sirModelState	sirState = {
-		.susceptible = UxHwDoubleGaussDist(0.75, 0.01),
+		.susceptible = UxHwDoubleUniformDist(0.7, 0.8),
 		.infected = UxHwDoubleGaussDist(0.15, 0.01),
 		.recovered = UxHwDoubleGaussDist(0.1, 0.01),
 		.interactionParameters = sirModelInteractionParameters
