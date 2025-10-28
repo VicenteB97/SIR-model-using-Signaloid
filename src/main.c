@@ -74,7 +74,7 @@ main(int argc, char *  argv[])
 		sirModelEvolution[simIteration + 1] = tempState;
 		timeInstantArray[simIteration + 1] = currentTime;
 
-		fprintf(stdout, "Time: %lf\nState: {%lf, %lf, %lf}", currentTime, tempState.susceptible, tempState.infected, tempState.recovered);
+		fprintf(stdout, "Time: %lf\nState: {%lf, %lf, %lf}\n", currentTime, tempState.susceptible, tempState.infected, tempState.recovered);
 	}
 
 	sirModelState	finalState = sirModelEvolution[simTimeParams.numberOfSteps - 1];
