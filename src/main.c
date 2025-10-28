@@ -33,8 +33,8 @@ main(int argc, char *  argv[])
 	 *	Setup the interaction parameters
 	 */
 	vectorFieldParameters	sirModelInteractionParameters = {
-		.susceptibleToInfectedRate = UxHwDoubleUniformDist(0.25, 0.35),
-		.infectedToRecoveredRate = UxHwDoubleUniformDist(0.15, 0.25)
+		.susceptibleToInfectedRate = UxHwDoubleGaussDist(0.3, 0.01),
+		.infectedToRecoveredRate = UxHwDoubleGaussDist(0.2, 0.01)
 	};
 
 	/*
@@ -73,7 +73,7 @@ main(int argc, char *  argv[])
 	/*
 	 *	Store the full simulation to a file in the cloud storage:
 	 */
-	FILE *	outputFile = fopen("/Signaloid/sirExampleOutput/sirModelOutput.txt", "w");
+	FILE *	outputFile = fopen("sd0/Signaloid/sirExampleOutput/sirModelOutput.txt", "w");
 	if(!outputFile)
 	{
 		fprintf(stderr, "Error has occured. File cannot be opened.\n");
