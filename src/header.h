@@ -1,7 +1,7 @@
 #pragma once
 
 #define kSirModelInitialTime	(0.0)
-#define kSirModelFinalTime	(5.0)
+#define kSirModelFinalTime	(30.0)
 #define kSirModelTimestepSize	(0.5)
 
 typedef struct

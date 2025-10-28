@@ -68,13 +68,8 @@ main(int argc, char *  argv[])
 	timeInstantArray[0] = simTimeParams.initTime;
 	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps - 1; simIteration++)
 	{
-		sirModelState	tempState = odeIntegrationStep(&sirModelEvolution[simIteration], &simTimeParams);
-		double		currentTime = timeInstantArray[simIteration] + simTimeParams.integratorTimeStep;
-
-		sirModelEvolution[simIteration + 1] = tempState;
-		timeInstantArray[simIteration + 1] = currentTime;
-
-		fprintf(stdout, "Time: %lf\nState: {%lf, %lf, %lf}\n", currentTime, tempState.susceptible, tempState.infected, tempState.recovered);
+		sirModelEvolution[simIteration + 1] = odeIntegrationStep(&sirModelEvolution[simIteration], &simTimeParams);
+		timeInstantArray[simIteration + 1] = timeInstantArray[simIteration] + simTimeParams.integratorTimeStep;
 	}
 
 	sirModelState	finalState = sirModelEvolution[simTimeParams.numberOfSteps - 1];
