@@ -61,19 +61,19 @@ main(int argc, char *  argv[])
 
 	sirModelEvolution[0] = sirState;
 	timeInstantArray[0] = simTimeParams.initTime;
-	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps; simIteration++)
+	for(size_t simIteration = 0; simIteration < simTimeParams.numberOfSteps - 1; simIteration++)
 	{
 		sirModelEvolution[simIteration + 1] = odeIntegrationStep(&sirModelEvolution[simIteration], &simTimeParams);
 		timeInstantArray[simIteration + 1] = timeInstantArray[simIteration] + simTimeParams.integratorTimeStep;
 	}
 
-	sirModelState	finalState = sirModelEvolution[simTimeParams.numberOfSteps];
+	sirModelState	finalState = sirModelEvolution[simTimeParams.numberOfSteps - 1];
 	fprintf(stdout, "Final susceptibles: %lf\nFinal infected: %lf\nFinal recovered: %lf\n", finalState.susceptible, finalState.infected, finalState.recovered);
 
 	/*
 	 *	Store the full simulation to a file in the cloud storage:
 	 */
-	FILE *	outputFile = fopen("./Signaloid/sirExampleOutput/sirModelOutput.txt", "w");
+	FILE *	outputFile = fopen("/Signaloid/sirExampleOutput/sirModelOutput.txt", "w");
 	if(!outputFile)
 	{
 		fprintf(stderr, "Error has occured. File cannot be opened.\n");
