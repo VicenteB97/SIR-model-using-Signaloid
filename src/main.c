@@ -54,18 +54,18 @@ main(int argc, char *  argv[])
 	/*
 	 *	Define an array of states to store all the information. Same for the timing info
 	 */
-	sirModelState	sirModelEvolution[(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
-	double		timeInstantArray[(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	sirModelState	sirModelEvolution[(size_t)(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	double		timeInstantArray[(size_t)(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
 
 	sirModelEvolution[0] = sirState;
-	timeInstantArray[0] = simulationParameters.initTime;
+	timeInstantArray[0] = simTimeParams.initTime;
 	for(size_t simIteration = 0; simIteration < (kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize; simIteration++)
 	{
 		sirModelEvolution[simIteration + 1] = odeIntegrationStep(&sirModelEvolution[simIteration], &simTimeParams);
 		timeInstantArray[simIteration + 1] = timeInstantArray[simIteration] + simTimeParams.integratorTimeStep;
 	}
 
-	sirModelState	finalState = sirModelEvolution[(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
+	sirModelState	finalState = sirModelEvolution[(size_t)(kSirModelFinalTime - kSirModelInitialTime) / kSirModelTimestepSize + 1];
 	fprintf(stdout, "Final susceptibles: %lf\nFinal infected: %lf\nFinal recovered: %lf\n", finalState.susceptible, finalState.infected, finalState.recovered);
 
 	/*
